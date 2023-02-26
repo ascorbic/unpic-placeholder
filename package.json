@@ -1,0 +1,11 @@
+{
+  "name": "unpic-placeholder",
+  "packageManager": "yarn@3.4.1",
+  "dependencies": {
+    "blurhash": "^2.0.5"
+  },
+  "devDependencies": {
+    "publint": "^0.1.9",
+    "tsup": "^6.6.3"
+  }
+}
