@@ -1,11 +1,33 @@
 {
-  "name": "unpic-placeholder",
+  "name": "@unpic/placeholder",
   "packageManager": "yarn@3.4.1",
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "blurhash": "^2.0.5"
   },
   "devDependencies": {
     "publint": "^0.1.9",
-    "tsup": "^6.6.3"
+    "tsup": "^6.6.3",
+    "typescript": "^4.9.5"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "publint": "publint",
+    "prepublishOnly": "yarn build"
+  },
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
