@@ -1159,6 +1159,7 @@ __metadata:
     preact: ^10.11.3
     preact-render-to-string: ^5.1.2
     publint: ^0.1.9
+    tsdoc-markdown: ^0.0.1
     tsup: ^6.6.3
     typescript: ^4.9.5
   languageName: unknown
@@ -3666,6 +3667,17 @@ __metadata:
   version: 0.1.13
   resolution: "ts-interface-checker@npm:0.1.13"
   checksum: 20c29189c2dd6067a8775e07823ddf8d59a33e2ffc47a1bd59a5cb28bb0121a2969a816d5e77eda2ed85b18171aa5d1c4005a6b88ae8499ec7cc49f78571cb5e
+  languageName: node
+  linkType: hard
+
+"tsdoc-markdown@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "tsdoc-markdown@npm:0.0.1"
+  peerDependencies:
+    typescript: 4.X
+  bin:
+    tsdoc: bin/index.js
+  checksum: b13565edaa1f7e50c2958248aed8582669e1e4e60ac8c94e34dada6fb4b8290ddbbef4c0f6efabb07b5c1c48c5623b8a0a51c88230cc248e6d60cbf99a2b190c
   languageName: node
   linkType: hard
 
