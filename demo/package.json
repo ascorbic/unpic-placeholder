@@ -1,0 +1,5 @@
+{
+    "name": "playground",
+    "private": true,
+    "source": "src/index.html"
+}

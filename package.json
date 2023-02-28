@@ -24,7 +24,7 @@
   },
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts --clean",
-    "build:demo": "parcel build demo/src/index.html --no-source-maps --no-minify --dist-dir demo/dist",
+    "build:demo": "parcel build demo --dist-dir demo/dist",
     "dev:demo": "parcel demo/src/index.html --no-source-maps --dist-dir demo/dist",
     "publint": "publint",
     "prepublishOnly": "yarn build && yarn publint",
@@ -39,6 +39,14 @@
       "require": "./dist/index.js",
       "import": "./dist/index.mjs"
     }
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ascorbic/unpic-placeholder.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ascorbic/unpic-placeholder/issues"
   },
   "publishConfig": {
     "access": "public"
