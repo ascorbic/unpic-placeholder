@@ -190,10 +190,20 @@ textarea {
   height: 200px;
 }
 
-@media (max-width: 850px) {
+@media (max-width: 1400px) {
   .images {
-    grid-template-columns: repeat(1, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
+}
+
+@media (max-width: 1000px) {
+  .images {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 850px) {
+
   .tools {
     grid-template-columns: 2fr;
     margin: 0;

@@ -115,7 +115,7 @@ export default function App() {
             URI. These are usually both around 150 bytes in size, and can be
             applied as a CSS background image to the img element. For more
             details, see the{" "}
-            <a href="https://github.com/ascorbic/unpic-img">README</a>.
+            <a href="https://github.com/ascorbic/unpic-placeholder">README</a>.
           </p>
           <p>
             Try it out by clicking one of the examples or choosing your own
