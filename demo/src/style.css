@@ -13,8 +13,7 @@ body {
   background-size: cover;
 }
 
-h1,
-.instructions {
+h1 {
   text-align: center;
 }
 
@@ -32,8 +31,7 @@ details {
 }
 
 .blurhash {
-  width: 450px;
-  height: 300px;
+  max-width: 450px;
   background-color: white;
 }
 
@@ -48,12 +46,30 @@ details {
   padding: 1.5em;
   box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
   border-radius: 10px;
+  place-items: center;
+}
+
+.instructions {
+  grid-area: 1 / 1 / 2 / 4;
+  font-size: 18px;
+}
+
+.instructions h1 {
+  margin: 0;
+  font-size: 24px;
 }
 
 .tools > div,
 details {
   justify-content: stretch;
   display: grid;
+}
+
+.tools > .hash {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: min-content;
 }
 
 label {
@@ -101,7 +117,17 @@ details {
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  justify-content: stretch;
+  align-items: stretch;
   grid-gap: 5px;
+}
+
+.grid img {
+  cursor: pointer;
+}
+.grid img:hover,
+.grid label:hover {
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
 }
 
 .images {
@@ -117,31 +143,32 @@ details {
   flex-direction: column;
 }
 
-@media (max-width: 850px) {
-  .images {
-    grid-template-columns: repeat(1, 1fr);
-  }
-  .tools {
-    grid-template-columns: 2fr;
-    margin: 0;
-    box-shadow: none;
-    padding: 5px;
-  }
+.grid > div {
+  display: flex;
+  align-items: center;
+  justify-items: stretch;
+  flex-direction: column;
+}
 
-  .tools > * {
-    grid-area: auto;
-  }
+.tools input[type="file"] {
+  display: none;
+}
 
-  .tools > div,
-  details {
-    padding: 0;
-  }
+.tools label[for="file"] {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #363232;
+  margin: 0;
+  padding: 5px 10px;
+  text-align: center;
+  font-size: 14px;
+  width: 150px;
+}
 
-  details {
-    grid-area: auto;
-    overflow: auto;
-    font-size: 12px;
-  }
+code {
+  font-size: 12px;
 }
 
 img {
@@ -158,7 +185,62 @@ img {
 }
 
 textarea {
-  justify-self: stretch;
-  width: 450px;
+  max-width: 450px;
+  width: 100%;
   height: 200px;
+}
+
+@media (max-width: 850px) {
+  .images {
+    grid-template-columns: repeat(1, 1fr);
+  }
+  .tools {
+    grid-template-columns: 2fr;
+    margin: 0;
+    box-shadow: none;
+    padding: 5px;
+    align-items: center;
+  }
+
+  .tools > * {
+    grid-area: auto;
+  }
+
+  .tools > div,
+  details {
+    padding: 0;
+  }
+
+  details {
+    grid-area: auto;
+    overflow: auto;
+    font-size: 12px;
+  }
+
+  .grid {
+    width: min-content;
+    justify-self: center;
+  }
+  .blurhash img {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  img {
+    border: 1px solid #363232;
+  }
+
+  .blurhash img {
+    opacity: 0;
+    transition: cubic-bezier(0.075, 0.82, 0.165, 1) opacity 1s;
+  }
+
+  .blurhash:hover img {
+    opacity: 1;
+  }
+
+  textarea {
+    max-width: 400px;
+    width: 100%;
+  }
 }

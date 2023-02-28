@@ -1,7 +1,6 @@
 import { computed, effect, signal } from "@preact/signals";
 import { JSX } from "preact";
 import { decode, encode } from "blurhash";
-import { Image as UnpicImage } from "@unpic/preact";
 import {
   imageDataToDataURI,
   pixelsToCssGradients,
@@ -10,7 +9,11 @@ import {
 import "./style.css";
 import * as pako from "pako";
 
-const hash = signal("LGF5]+Yk^6#M@-5c,1J5@[or[Q6.");
+// ⚠️ IMPORTANT ⚠️
+// Don't use this file as a reference for how to use the library!
+// It is not the correct usage, and is only used for the demo so it can show sizes etc.
+
+const hash = signal("LkLgR,_NITIUMJIokDs:ROMxNHxu");
 
 const gzipStringLength = (str: string) => {
   // Convert the string to a Uint8Array
@@ -27,6 +30,7 @@ const pixels = computed(() => decode(hash.value, stopsX, stopsY));
 const gradient = computed(() =>
   pixelsToCssGradients(pixels.value, stopsX, stopsY).join(", ")
 );
+
 const bmpDataUri = computed(() =>
   imageDataToDataURI(rgbaPixelsToBmp(pixels.value, 4, 3), "image/bmp")
 );
@@ -56,9 +60,7 @@ const imgSrc = signal("");
 const clickedImage: JSX.GenericEventHandler<HTMLImageElement> = (event) => {
   const image = new Image();
   image.crossOrigin = "anonymous";
-  image.onload = () => {
-    useImage(image);
-  };
+  image.onload = () => useImage(image);
   image.src = (event.target as HTMLImageElement).src;
 };
 
@@ -102,34 +104,53 @@ export default function App() {
   return (
     <div>
       <div class="tools">
+        <div class="instructions">
+          <h1>@unpic/placeholder</h1>
+          <p>
+            This is a library for generating low quality image placeholders by
+            server-side rendering a <a href="https://blurha.sh/">BlurHash</a>.
+            These are displayed while an image is loading, and give better
+            appearance and can help reduce the LCP time. It can render the
+            Blurhash to either a set of CSS gradients, or a tiny BMP image data
+            URI. These are usually both around 150 bytes in size, and can be
+            applied as a CSS background image to the img element. For more
+            details, see the{" "}
+            <a href="https://github.com/ascorbic/unpic-img">README</a>.
+          </p>
+          <p>
+            Try it out by clicking one of the examples or choosing your own
+            image. The placeholder images are then displayed below.
+          </p>
+        </div>
         <div class="grid">
           <img
-            src="https://images.unsplash.com/photo-1603380380982-40d14d094ff0?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTE5fHxjb2xvcmZ1bHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=450&h=300&q=60"
+            src="https://images.unsplash.com/photo-1603380380982-40d14d094ff0?&auto=format&fit=crop&w=450&h=300&q=60"
             width={150}
             height={100}
             crossOrigin="anonymous"
+            onLoad={clickedImage}
             onClick={clickedImage}
           />
           <img
-            src="https://images.unsplash.com/photo-1559181567-c3190ca9959b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Njh8fGNvbG9yZnVsfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=450&h=300&q=60"
+            src="https://images.unsplash.com/photo-1559181567-c3190ca9959b?auto=format&fit=crop&w=450&h=300&q=60"
             width={150}
             height={100}
             onClick={clickedImage}
             crossOrigin="anonymous"
           />
-
           <img
-            src="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8Y29sb3JmdWwlMjBsYW5kc2NhcGUlMjBvcmllbnRhdGlvbnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=450&h=300&q=60"
+            src="https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=450&h=300&q=60"
             width={150}
             height={100}
             crossOrigin="anonymous"
             onClick={clickedImage}
           />
-          <input type="file" onChange={handleFileInputChange} />
+          <label for="file">Choose your own</label>
+          <input type="file" id="file" onChange={handleFileInputChange} />
         </div>
         {imgSrc.value && <img src={imgSrc} width={100} />}
         <div class="hash">
-          <label for="hash">Source hash</label>
+          <label for="hash">BlurHash</label>
           <input
             id="hash"
             value={hash}
@@ -143,7 +164,8 @@ export default function App() {
             {imgSrc.value && <img src={imgSrc} width={450} />}
           </div>
           <p>
-            Gradient. Bytes: {gradient.value.length} Gzipped {gradientLength}
+            <code>blurhashToCssGradientString</code>. Bytes:{" "}
+            {gradient.value.length} Gzipped {gradientLength}
           </p>
           <details>
             <summary>Gradient CSS</summary>
@@ -161,7 +183,8 @@ export default function App() {
             {imgSrc.value && <img src={imgSrc} width={450} />}
           </div>
           <p>
-            BMP data URI. Bytes: {bmpDataUri.value.length}. GZipped {bmpLength}
+            <code>blurhashToDataUri</code>. Bytes: {bmpDataUri.value.length}.
+            GZipped {bmpLength}
           </p>
           <details>
             <summary>BMP URI</summary>
