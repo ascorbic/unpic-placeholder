@@ -44,6 +44,20 @@ export function MyImage({ src, alt, blurhash }) {
 }
 ```
 
+## Generating the BlurHash
+
+You should pre-generate the BlurHash ahead of time. Some CDNs can do this for
+you. See [Imgix](https://blog.imgix.com/2021/01/26/blurhash) for example. This
+library does not generate the BlurHash. You can use the
+[blurhash](https://github.com/woltapp/blurhash/tree/master/TypeScript) library
+to do this. There are a few ways to do this. In Node:
+
+```typescript
+
+import { encode } from "blurhash";
+import { readFileSync } from "fs";
+
+
 ## API
 
 <!-- TSDOC_START -->
@@ -59,96 +73,99 @@ export function MyImage({ src, alt, blurhash }) {
 
 ### :gear: blurhashToDataUri
 
-Given a blurhash, returns a data URI of a BMP image. At tiny sizes, this is smaller than a PNG.
+Given a blurhash, returns a data URI of a BMP image. At tiny sizes, this is
+smaller than a PNG.
 
-| Function | Type |
-| ---------- | ---------- |
+| Function            | Type                                                                                       |
+| ------------------- | ------------------------------------------------------------------------------------------ |
 | `blurhashToDataUri` | `(blurhash: string, width?: number, height?: number) => `data:image/bmp;base64,${string}`` |
 
 Parameters:
 
-* `blurhash`: the blurhash string
-* `width`: the width of the generated background image. Keep it tiny. Default is 8 pixels
-* `height`: the height of the generated background image. Keep it tiny. Default is 8 pixels
-
+- `blurhash`: the blurhash string
+- `width`: the width of the generated background image. Keep it tiny. Default is
+  8 pixels
+- `height`: the height of the generated background image. Keep it tiny. Default
+  is 8 pixels
 
 ### :gear: blurhashToCssGradients
 
-Given a blurhash, returns an array of CSS linear-gradient() strings.
-This is a rough approximation of the blurhash image but as pure CSS.
+Given a blurhash, returns an array of CSS linear-gradient() strings. This is a
+rough approximation of the blurhash image but as pure CSS.
 
-| Function | Type |
-| ---------- | ---------- |
+| Function                 | Type                                                              |
+| ------------------------ | ----------------------------------------------------------------- |
 | `blurhashToCssGradients` | `(blurhash: string, columns?: number, rows?: number) => string[]` |
 
 Parameters:
 
-* `blurhash`: the blurhash string
-* `columns`: the number of gradients to generate horizontally. Default is 4
-* `rows`: the number of gradients to generate vertically. Default is 3
-
+- `blurhash`: the blurhash string
+- `columns`: the number of gradients to generate horizontally. Default is 4
+- `rows`: the number of gradients to generate vertically. Default is 3
 
 ### :gear: blurhashToCssGradientString
 
-Given a blurhash, returns an array of CSS linear-gradient() strings.
-This is a rough approximation of the blurhash image but as pure CSS.
+Given a blurhash, returns an array of CSS linear-gradient() strings. This is a
+rough approximation of the blurhash image but as pure CSS.
 
-| Function | Type |
-| ---------- | ---------- |
+| Function                      | Type                                                            |
+| ----------------------------- | --------------------------------------------------------------- |
 | `blurhashToCssGradientString` | `(blurhash: string, columns?: number, rows?: number) => string` |
 
 Parameters:
 
-* `blurhash`: the blurhash string
-* `columns`: the number of gradients to generate horizontally. Default is 4
-* `rows`: the number of gradients to generate vertically. Default is 3
-
+- `blurhash`: the blurhash string
+- `columns`: the number of gradients to generate horizontally. Default is 4
+- `rows`: the number of gradients to generate vertically. Default is 3
 
 ### :gear: blurhashToGradientCssObject
 
 Given a blurhash, returns an object with a CSS background-image property.
 
-| Function | Type |
-| ---------- | ---------- |
+| Function                      | Type                                                               |
+| ----------------------------- | ------------------------------------------------------------------ |
 | `blurhashToGradientCssObject` | `(blurhash: string, columns?: number, rows?: number) => CSSObject` |
 
 Parameters:
 
-* `blurhash`: the blurhash string
-* `columns`: the number of gradients to generate horizontally. Default is 4
-* `rows`: the number of gradients to generate vertically. Default is 3
-
+- `blurhash`: the blurhash string
+- `columns`: the number of gradients to generate horizontally. Default is 4
+- `rows`: the number of gradients to generate vertically. Default is 3
 
 ### :gear: blurhashToImageCssObject
 
-Given a blurhash, returns an object with CSS background properties to apply to an img.
+Given a blurhash, returns an object with CSS background properties to apply to
+an img.
 
-| Function | Type |
-| ---------- | ---------- |
+| Function                   | Type                                                               |
+| -------------------------- | ------------------------------------------------------------------ |
 | `blurhashToImageCssObject` | `(blurhash: string, width?: number, height?: number) => CSSObject` |
 
 Parameters:
 
-* `blurhash`: the blurhash string
-* `width`: the width of the generated background image. Default is 8 pixels
-* `height`: the height of the generated background image. Default is 8 pixels
-
+- `blurhash`: the blurhash string
+- `width`: the width of the generated background image. Default is 8 pixels
+- `height`: the height of the generated background image. Default is 8 pixels
 
 ### :gear: blurhashToImageCssString
 
-Given a blurhash, returns a CSS string for a background to apply to an img element.
+Given a blurhash, returns a CSS string for a background to apply to an img
+element.
 
-| Function | Type |
-| ---------- | ---------- |
+| Function                   | Type                                                            |
+| -------------------------- | --------------------------------------------------------------- |
 | `blurhashToImageCssString` | `(blurhash: string, width?: number, height?: number) => string` |
 
 Parameters:
 
-* `blurhash`: the blurhash string
-* `width`: the width of the generated background image. Default is 8 pixels
-* `height`: the height of the generated background image. Default is 8 pixels
-
-
-
+- `blurhash`: the blurhash string
+- `width`: the width of the generated background image. Default is 8 pixels
+- `height`: the height of the generated background image. Default is 8 pixels
 
 <!-- TSDOC_END -->
+
+---
+
+Copyright © 2023 [Matt Kane](https://github.com/ascorbic). This project is
+[MIT](LICENSE) licensed.
+```
