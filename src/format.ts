@@ -113,9 +113,9 @@ function percentOrZero(num: number): string | 0 {
 }
 
 /**
- * Converts raw RGBA pixels to a CSS gradient
+ * Converts raw RGBA pixels to an array of CSS gradients
  */
-export function pixelsToCssGradient(
+export function pixelsToCssGradients(
   pixels: Uint8ClampedArray,
   columns: number,
   rows: number

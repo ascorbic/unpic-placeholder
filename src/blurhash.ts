@@ -1,7 +1,7 @@
 import { decode } from "blurhash";
 import {
   imageDataToDataURI,
-  pixelsToCssGradient,
+  pixelsToCssGradients,
   rgbaPixelsToBmp,
 } from "./format";
 
@@ -39,7 +39,22 @@ export function blurhashToCssGradients(
   rows = 3
 ): Array<string> {
   const pixels = decode(blurhash, columns, rows);
-  return pixelsToCssGradient(pixels, columns, rows);
+  return pixelsToCssGradients(pixels, columns, rows);
+}
+
+/**
+ * Given a blurhash, returns an array of CSS linear-gradient() strings.
+ * This is a rough approximation of the blurhash image but as pure CSS.
+ * @param blurhash the blurhash string
+ * @param columns the number of gradients to generate horizontally. Default is 4
+ * @param rows the number of gradients to generate vertically. Default is 3
+ */
+export function blurhashToCssGradientString(
+  blurhash: string,
+  columns = 4,
+  rows = 3
+): string {
+  return blurhashToCssGradients(blurhash, columns, rows).join(",");
 }
 
 /**
@@ -50,28 +65,12 @@ export function blurhashToCssGradients(
  */
 export function blurhashToGradientCssObject(
   blurhash: string,
-  width = 8,
-  height = 8
+  columns = 4,
+  rows = 3
 ): CSSObject {
   return {
-    backgroundImage: blurhashToCssGradients(blurhash, width, height).join(","),
+    backgroundImage: blurhashToCssGradients(blurhash, columns, rows).join(","),
   };
-}
-
-/**
- * Given a blurhash, returns a CSS string for a background gradient.
- * @param blurhash the blurhash string
- * @param columns the number of gradients to generate horizontally. Default is 4
- * @param rows the number of gradients to generate vertically. Default is 3
- * */
-export function blurhashToGradientCssString(
-  blurhash: string,
-  width = 8,
-  height = 8
-): string {
-  return `background: ${blurhashToCssGradients(blurhash, width, height).join(
-    ","
-  )};`;
 }
 
 /**
