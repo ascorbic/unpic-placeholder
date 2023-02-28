@@ -53,10 +53,28 @@ library does not generate the BlurHash. You can use the
 to do this. There are a few ways to do this. In Node:
 
 ```typescript
-
 import { encode } from "blurhash";
-import { readFileSync } from "fs";
+import { getPixels } from "@unpic/pixels";
 
+const jpgData = await getPixels(
+  "https://res.cloudinary.com/demo/image/upload/c_lfill,w_200,h_100/dog.jpg"
+);
+const data = Uint8ClampedArray.from(jpgData.data);
+const blurhash = encode(data, jpgData.width, jpgData.height, 4, 4);
+```
+
+In Deno:
+
+```typescript
+import { encode } from "blurhash";
+import { getPixels } from "https://deno.land/x/get_pixels/mod.ts";
+
+const jpgData = await getPixels(
+  "https://res.cloudinary.com/demo/image/upload/c_lfill,w_200,h_100/dog.jpg"
+);
+const data = Uint8ClampedArray.from(jpgData.data);
+const blurhash = encode(data, jpgData.width, jpgData.height, 4, 4);
+```
 
 ## API
 
@@ -168,4 +186,7 @@ Parameters:
 
 Copyright © 2023 [Matt Kane](https://github.com/ascorbic). This project is
 [MIT](LICENSE) licensed.
+
+```
+
 ```
