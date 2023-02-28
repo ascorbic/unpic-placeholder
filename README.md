@@ -7,6 +7,8 @@ the LCP time. It can render the Blurhash to either a set of CSS gradients, or a
 tiny BPM image data URI. These are usually around 150 bytes in size, and can be
 applied as a background image to the img element.
 
+[See the demo](https://unpic-placeholder.netlify.app/)
+
 Unlike other BlurHash libraries, this generates CSS values so it works without
 client-side JavaScript in any web framework or none, and can be displayed before
 page hydration. It was designed for
