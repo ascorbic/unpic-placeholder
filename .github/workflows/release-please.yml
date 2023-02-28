@@ -1,0 +1,24 @@
+on:
+  push:
+    branches:
+      - main
+name: release-please
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        id: release
+        with:
+          release-type: node
+          package-name: "@unpic/placeholder"
+      - name: Authenticate Yarn
+        run: yarn config set npmAuthToken $NPM_AUTH_TOKEN
+        if: ${{ steps.release.outputs.release_created }}
+        env:
+          NPM_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+      - run: yarn publish
+        if: ${{ steps.release.outputs.release_created }}
