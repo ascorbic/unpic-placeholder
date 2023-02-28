@@ -1,6 +1,6 @@
 {
   "name": "@unpic/placeholder",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "packageManager": "yarn@3.4.1",
   "files": [
     "dist"
