@@ -97,6 +97,25 @@ summary {
   overflow: auto;
 }
 
+.palette {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+}
+
+.palette > div {
+  height: 100px;
+}
+
+.dominant-color {
+  font-size: 20px;
+  text-align: center;
+  padding: 10px;
+  -webkit-text-stroke-color: white;
+  -webkit-text-stroke-width: 1px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
 input,
 select {
   font-size: 18px;
@@ -171,7 +190,7 @@ code {
   font-size: 12px;
 }
 
-img {
+.tools img {
   border: 1px solid #363232;
 }
 
@@ -203,7 +222,6 @@ textarea {
 }
 
 @media (max-width: 850px) {
-
   .tools {
     grid-template-columns: 2fr;
     margin: 0;
@@ -211,7 +229,9 @@ textarea {
     padding: 5px;
     align-items: center;
   }
-
+  .dominant-color {
+    font-size: 18px;
+  }
   .tools > * {
     grid-area: auto;
   }
