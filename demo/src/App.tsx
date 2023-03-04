@@ -1,13 +1,15 @@
 import { computed, effect, signal } from "@preact/signals";
 import { JSX } from "preact";
 import { decode, encode } from "blurhash";
+
 import {
+  getPalette,
   imageDataToDataURI,
   pixelsToCssGradients,
   rgbaPixelsToBmp,
 } from "../../src";
 import "./style.css";
-import * as pako from "pako";
+import { gzip } from "pako";
 
 // ⚠️ IMPORTANT ⚠️
 // Don't use this file as a reference for how to use the library!
@@ -18,7 +20,7 @@ const hash = signal("LkLgR,_NITIUMJIokDs:ROMxNHxu");
 const gzipStringLength = (str: string) => {
   // Convert the string to a Uint8Array
   const uint8Array = new TextEncoder().encode(str);
-  const compressed = pako.gzip(uint8Array);
+  const compressed = gzip(uint8Array);
   return compressed.length;
 };
 
@@ -31,6 +33,13 @@ const gradient = computed(() =>
   pixelsToCssGradients(pixels.value, stopsX, stopsY).join(", ")
 );
 
+const paletteColors = signal([] as [number, number, number][]);
+
+const rgbToStyle = (rgb: [number, number, number]) => {
+  const [r, g, b] = rgb;
+  return `rgb(${r}, ${g}, ${b})`;
+};
+
 const bmpDataUri = computed(() =>
   imageDataToDataURI(rgbaPixelsToBmp(pixels.value, 4, 3), "image/bmp")
 );
@@ -41,7 +50,9 @@ const blurhashDataUri = computed(() => {
   const canvas = document.createElement("canvas");
   canvas.width = 32;
   canvas.height = 32;
-  if (!canvas) return;
+  if (!canvas) {
+    return;
+  }
   const ctx = canvas.getContext("2d");
   const imgData = ctx?.createImageData(32, 32);
   imgData?.data.set(pixels);
@@ -54,7 +65,6 @@ const blurhashDataUri = computed(() => {
 const gradientLength = computed(() => gzipStringLength(gradient.value));
 const bmpLength = computed(() => gzipStringLength(bmpDataUri.value));
 
-const imagedata = signal<ImageData | null>(null);
 const imgSrc = signal("");
 
 const clickedImage: JSX.GenericEventHandler<HTMLImageElement> = (event) => {
@@ -66,16 +76,24 @@ const clickedImage: JSX.GenericEventHandler<HTMLImageElement> = (event) => {
 
 const useImage = (image: HTMLImageElement) => {
   const canvas = document.createElement("canvas");
-  canvas.width = image.width;
-  canvas.height = image.height;
-  console.log(canvas.width, canvas.height);
-  const context = canvas.getContext("2d");
-  if (!context) return;
-  context.drawImage(image, 0, 0);
 
-  imagedata.value = context.getImageData(0, 0, canvas.width, canvas.height);
-  const pixels = imagedata.value.data;
-  hash.value = encode(pixels, canvas.width, canvas.height, 4, 3);
+  const width = Math.min(image.width, 450);
+  const height = image.height * (width / image.width);
+
+  canvas.width = width;
+  canvas.height = height;
+  const context = canvas.getContext("2d");
+  if (!context) {
+    return;
+  }
+  context.drawImage(image, 0, 0, width, height);
+
+  const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
+  const start = performance.now();
+  paletteColors.value = getPalette(data, 8);
+  console.log("getPalette", performance.now() - start, "ms");
+
+  hash.value = encode(data, canvas.width, canvas.height, 4, 3);
   imgSrc.value = image.src;
 };
 
@@ -108,19 +126,38 @@ export default function App() {
           <h1>@unpic/placeholder</h1>
           <p>
             This is a library for generating low quality image placeholders by
-            server-side rendering a <a href="https://blurha.sh/">BlurHash</a>.
-            These are displayed while an image is loading, and give better
-            appearance and can help reduce the LCP time. It can render the
-            Blurhash to either a set of CSS gradients, or a tiny BMP image data
-            URI. These are usually both around 150 bytes in size, and can be
-            applied as a CSS background image to the img element. For more
-            details, see the{" "}
+            extracting the dominant color from image or server-side rendering a{" "}
+            <a href="https://blurha.sh/">BlurHash</a>. These are displayed while
+            an image is loading, and give better appearance and can help reduce
+            the LCP time. It can render a Blurhash to either a set of CSS
+            gradients, or a tiny BMP image data URI. These are usually both
+            around 150 bytes in size, and can be applied as a CSS background
+            image to the img element. For more details, see the{" "}
             <a href="https://github.com/ascorbic/unpic-placeholder">README</a>.
           </p>
           <p>
             Try it out by clicking one of the examples or choosing your own
             image. The placeholder images are then displayed below.
           </p>
+          <div class="palette">
+            {paletteColors.value.map((color) => (
+              <div
+                style={{
+                  backgroundColor: rgbToStyle(color),
+                }}
+              />
+            ))}
+          </div>
+          <div
+            class="dominant-color"
+            style={{
+              backgroundColor: rgbToStyle(
+                paletteColors.value?.[0] ?? [0, 0, 0]
+              ),
+            }}
+          >
+            Dominant color
+          </div>
         </div>
         <div class="grid">
           <img
@@ -194,14 +231,15 @@ export default function App() {
         <div>
           <div
             style={{
-              backgroundImage: `url(${blurhashDataUri})`,
-              backgroundSize: "cover",
+              backgroundColor: rgbToStyle(
+                paletteColors.value?.[0] || [0, 0, 0]
+              ),
             }}
             class="blurhash"
           >
             {imgSrc.value && <img src={imgSrc} width={450} />}
           </div>
-          <p>Reference blurshash render</p>
+          <p>Dominant color</p>
         </div>
       </div>
     </div>

@@ -28,7 +28,7 @@
     "dev:demo": "parcel demo/src/index.html --no-source-maps --dist-dir demo/dist",
     "publint": "publint",
     "prepublishOnly": "yarn build && yarn publint",
-    "doc": "tsdoc --src='src/blurhash.ts'"
+    "doc": "tsdoc --src=src/blurhash.ts,src/palette.ts"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
