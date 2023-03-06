@@ -94,7 +94,6 @@ export function kMeansClusters(
       }
     });
   }
-  console.log(`k-means converged in ${iterations} iterations.`);
   // Sort clusters by size in descending order so the most dominant colours are first
   return clusters.sort((a, b) => b.cluster.length - a.cluster.length);
 }
