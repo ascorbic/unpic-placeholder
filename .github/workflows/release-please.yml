@@ -18,6 +18,8 @@ jobs:
           cache: "yarn"
       - name: Install dependencies
         run: yarn install --immutable
+      - name: Build
+        run: yarn prepublishOnly
       - uses: google-github-actions/release-please-action@v3
         id: release
         with:
