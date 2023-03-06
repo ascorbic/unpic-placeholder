@@ -26,7 +26,9 @@ jobs:
           release-type: node
           package-name: "@unpic/placeholder"
       - name: Authenticate Yarn
-        run: yarn config set npmAuthToken $NPM_AUTH_TOKEN
+        run:
+          yarn config set npmAuthToken $NPM_AUTH_TOKEN && yarn config set
+          registry https://registry.npmjs.org/
         if: ${{ steps.release.outputs.release_created }}
         env:
           NPM_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
