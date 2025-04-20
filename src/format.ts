@@ -209,8 +209,8 @@ export function pixelsToCssVars(
   for (let idx = 0; idx < pixelsWithMetadata.length; idx++) {
     const { r, g, b, col, row } = pixelsWithMetadata[idx];
 
-    const percentX = Math.round((col / (columns - 1)) * 100);
-    const percentY = Math.round((row / (rows - 1)) * 100);
+    const percentX = Math.round(((col + 0.5) / columns) * 100);
+    const percentY = Math.round(((row + 0.5) / rows) * 100);
 
     styleBlock += `--${prefix}p${idx}:${percentOrZero(
       percentX
