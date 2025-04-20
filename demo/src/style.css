@@ -194,15 +194,6 @@ code {
   border: 1px solid #363232;
 }
 
-.blurhash img {
-  opacity: 0;
-  transition: cubic-bezier(0.075, 0.82, 0.165, 1) opacity 1s;
-}
-
-.blurhash:hover img {
-  opacity: 1;
-}
-
 textarea {
   max-width: 450px;
   width: 100%;
@@ -260,17 +251,27 @@ textarea {
     border: 1px solid #363232;
   }
 
-  .blurhash img {
-    opacity: 0;
-    transition: cubic-bezier(0.075, 0.82, 0.165, 1) opacity 1s;
-  }
-
-  .blurhash:hover img {
-    opacity: 1;
-  }
-
   textarea {
     max-width: 400px;
     width: 100%;
   }
+}
+.i-placeholder {
+  background-image: radial-gradient(
+      at var(--p0, 0 0),
+      var(--c0, #000) 0%,
+      transparent 50%
+    ),
+    radial-gradient(at var(--p1, 0 0), var(--c1, #000) 0%, transparent 50%),
+    radial-gradient(at var(--p2, 0 0), var(--c2, #000) 0%, transparent 50%),
+    radial-gradient(at var(--p3, 0 0), var(--c3, #000) 0%, transparent 50%),
+    radial-gradient(at var(--p4, 0 0), var(--c4, #000) 0%, transparent 50%),
+    radial-gradient(at var(--p5, 0 0), var(--c5, #000) 0%, transparent 50%),
+    radial-gradient(at var(--p6, 0 0), var(--c6, #000) 0%, transparent 50%),
+    radial-gradient(at var(--p7, 0 0), var(--c7, #000) 0%, transparent 50%),
+    radial-gradient(at var(--p8, 0 0), var(--c8, #000) 0%, transparent 50%),
+    radial-gradient(at var(--p9, 0 0), var(--c9, #000) 0%, transparent 50%),
+    radial-gradient(at var(--p10, 0 0), var(--c10, #000) 0%, transparent 50%),
+    radial-gradient(at var(--p11, 0 0), var(--c11, #000) 0%, transparent 50%);
+  background-size: cover;
 }

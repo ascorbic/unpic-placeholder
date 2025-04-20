@@ -113,33 +113,131 @@ function percentOrZero(num: number): string | 0 {
   if (num === 0) return 0;
   return `${num}%`;
 }
-
 /**
  * Converts raw RGBA pixels to an array of CSS gradients
+ * Sorts by luminance to make the output more consistent regardless of image orientation
+ * @param pixels - The raw RGBA pixel data
+ * @param columns - Number of columns in the grid
+ * @param rows - Number of rows in the grid
+ * @returns Array of gradient strings
  */
 export function pixelsToCssGradients(
   pixels: Uint8ClampedArray,
   columns: number,
   rows: number
 ): Array<string> {
-  const stops = [];
+  // Create array of pixel data with position and luminance information
+  const pixelsWithMetadata = [];
+
   for (let i = 0, j = 0; i < pixels.length; i += 4, j++) {
+    const r = pixels[i];
+    const g = pixels[i + 1];
+    const b = pixels[i + 2];
+    // Calculate luminance (perceived brightness)
+    // Using the formula: 0.299*R + 0.587*G + 0.114*B
+    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+
     const col = j % columns;
     const row = Math.floor(j / columns);
+
+    pixelsWithMetadata.push({
+      r,
+      g,
+      b,
+      luminance,
+      col,
+      row,
+    });
+  }
+
+  // Sort by luminance (brightest first)
+  pixelsWithMetadata.sort((a, b) => b.luminance - a.luminance);
+
+  // Generate gradient strings
+  const stops = [];
+
+  for (const pixel of pixelsWithMetadata) {
+    const { r, g, b, col, row } = pixel;
 
     const percentX = Math.round((col / (columns - 1)) * 100);
     const percentY = Math.round((row / (rows - 1)) * 100);
 
-    const r = pixels[i];
-    const g = pixels[i + 1];
-    const b = pixels[i + 2];
-    // pixels[i+3] is alpha channel, but we don't need it
-
     const color = `radial-gradient(at ${percentOrZero(
       percentX
-      // Hex is smaller than rgba. #00000000 = transparent
     )} ${percentOrZero(percentY)},${rgbToHex(r, g, b)},#00000000 50%)`;
     stops.push(color);
   }
+
   return stops;
+}
+
+export function pixelsToCssVars(
+  pixels: Uint8ClampedArray,
+  columns: number,
+  rows: number,
+  prefix: string = ""
+): string {
+  // Create array of pixel data with position and luminance information
+  const pixelsWithMetadata = [];
+
+  for (let i = 0, j = 0; i < pixels.length; i += 4, j++) {
+    const r = pixels[i];
+    const g = pixels[i + 1];
+    const b = pixels[i + 2];
+    // Calculate luminance (perceived brightness)
+    // Using the formula: 0.299*R + 0.587*G + 0.114*B
+    const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+
+    const col = j % columns;
+    const row = Math.floor(j / columns);
+
+    pixelsWithMetadata.push({
+      r,
+      g,
+      b,
+      luminance,
+      col,
+      row,
+    });
+  }
+
+  // Sort by luminance (brightest first)
+  pixelsWithMetadata.sort((a, b) => b.luminance - a.luminance);
+
+  let styleBlock = "";
+
+  for (let idx = 0; idx < pixelsWithMetadata.length; idx++) {
+    const { r, g, b, col, row } = pixelsWithMetadata[idx];
+
+    const percentX = Math.round((col / (columns - 1)) * 100);
+    const percentY = Math.round((row / (rows - 1)) * 100);
+
+    styleBlock += `--${prefix}p${idx}:${percentOrZero(
+      percentX
+    )} ${percentOrZero(percentY)};`;
+    styleBlock += `--${prefix}c${idx}:${rgbToHex(r, g, b)};`;
+  }
+
+  return styleBlock;
+}
+
+/**
+ * Generates a shared CSS class for optimized gradient placeholders
+ * @param totalGradients - Total number of gradients to include
+ * @param prefix - Prefix for CSS variable names (default: 'i')
+ * @returns CSS class declaration string
+ */
+export function generateGradientCssClass(
+  totalGradients: number,
+  prefix: string = ""
+): string {
+  const bgImages = [];
+
+  for (let i = 0; i < totalGradients; i++) {
+    bgImages.push(
+      `radial-gradient(at var(--${prefix}p${i},0 0), var(--${prefix}c${i},#000) 0%, transparent 50%)`
+    );
+  }
+
+  return `background-image:${bgImages.join(",")};background-size:cover;`;
 }

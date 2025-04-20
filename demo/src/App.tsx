@@ -7,6 +7,8 @@ import {
   imageDataToDataURI,
   pixelsToCssGradients,
   rgbaPixelsToBmp,
+  generateGradientCssClass,
+  pixelsToCssVars, // Import the new helper function
 } from "../../src";
 import "./style.css";
 import { gzip } from "pako";
@@ -27,6 +29,23 @@ const gzipStringLength = (str: string) => {
 const stopsX = 4;
 const stopsY = 3;
 
+// Transparent 1x1 pixel PNG as data URI
+const transparentPixel =
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
+
+// Track if hovering to show placeholder for each image type
+const isHoveringGradient = signal(false);
+const isHoveringBmp = signal(false);
+const isHoveringLqip = signal(false);
+const isHoveringColor = signal(false);
+const isHoveringCssGradient = signal(false);
+const isHoveringCssVars = signal(false);
+const imgSrc = signal("");
+
+// Fixed width with dynamic height
+const fixedWidth = 450; // Fixed display width
+const imageHeight = signal(300); // Default height
+
 const pixels = computed(() => decode(hash.value, stopsX, stopsY));
 
 const gradient = computed(() =>
@@ -44,28 +63,72 @@ const bmpDataUri = computed(() =>
   imageDataToDataURI(rgbaPixelsToBmp(pixels.value, 4, 3), "image/bmp")
 );
 
-const blurhashDataUri = computed(() => {
-  const pixels = decode(hash.value, 32, 32);
+const lqipUri = signal("");
 
-  const canvas = document.createElement("canvas");
-  canvas.width = 32;
-  canvas.height = 32;
-  if (!canvas) {
+// New variables for direct CSS gradient
+const directGradientString = signal("");
+const directGradientLength = computed(() =>
+  gzipStringLength(directGradientString.value)
+);
+
+// New variables for CSS Variables optimization
+const cssVarsString = signal("");
+const cssClassString = signal("");
+const cssVarsLength = computed(() => gzipStringLength(cssVarsString.value));
+
+effect(() => {
+  if (!imgSrc.value) {
+    lqipUri.value = "";
     return;
   }
-  const ctx = canvas.getContext("2d");
-  const imgData = ctx?.createImageData(32, 32);
-  imgData?.data.set(pixels);
-  if (imgData) {
-    ctx?.putImageData(imgData, 0, 0);
-  }
-  return canvas.toDataURL();
+
+  // Create a canvas element to scale the image
+  const canvas = document.createElement("canvas");
+  const img = new Image();
+  img.crossOrigin = "anonymous";
+
+  img.onload = () => {
+    const maxSize = 4;
+    const scale = Math.max(img.width, img.height) / maxSize;
+    const width = Math.round(img.width / scale);
+    const height = Math.round(img.height / scale);
+
+    canvas.width = width;
+    canvas.height = height;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      lqipUri.value = "";
+      return;
+    }
+
+    ctx.drawImage(img, 0, 0, width, height);
+    lqipUri.value = canvas.toDataURL("image/bmp", 0.5);
+
+    // Get image data for processing
+    const imageData = ctx.getImageData(0, 0, width, height);
+
+    // Generate direct CSS gradient string
+    const directGradients = pixelsToCssGradients(imageData.data, width, height);
+    directGradientString.value = directGradients.join(", ");
+
+    // Generate CSS variables (optimized)
+    cssVarsString.value = pixelsToCssVars(imageData.data, width, height);
+    cssClassString.value = generateGradientCssClass(width * height);
+  };
+
+  img.onerror = () => {
+    lqipUri.value = "";
+  };
+
+  img.src = imgSrc.value;
 });
 
 const gradientLength = computed(() => gzipStringLength(gradient.value));
 const bmpLength = computed(() => gzipStringLength(bmpDataUri.value));
-
-const imgSrc = signal("");
+const lqipLength = computed(() =>
+  lqipUri.value ? gzipStringLength(lqipUri.value) : 0
+);
 
 const clickedImage: JSX.GenericEventHandler<HTMLImageElement> = (event) => {
   const image = new Image();
@@ -77,8 +140,12 @@ const clickedImage: JSX.GenericEventHandler<HTMLImageElement> = (event) => {
 const useImage = (image: HTMLImageElement) => {
   const canvas = document.createElement("canvas");
 
-  const width = Math.min(image.width, 450);
-  const height = image.height * (width / image.width);
+  const width = Math.min(image.width, fixedWidth);
+  const height = Math.round(image.height * (width / image.width));
+
+  // Calculate height based on aspect ratio for the fixed display width
+  const displayHeight = Math.round((fixedWidth / width) * height);
+  imageHeight.value = displayHeight;
 
   canvas.width = width;
   canvas.height = height;
@@ -185,7 +252,7 @@ export default function App() {
           <label for="file">Choose your own</label>
           <input type="file" id="file" onChange={handleFileInputChange} />
         </div>
-        {imgSrc.value && <img src={imgSrc} width={100} />}
+        {imgSrc.value && <img src={imgSrc.value} width={100} />}
         <div class="hash">
           <label for="hash">BlurHash</label>
           <input
@@ -197,8 +264,20 @@ export default function App() {
       </div>
       <div class="images">
         <div>
-          <div style={{ backgroundImage: gradient.value }} class="blurhash">
-            {imgSrc.value && <img src={imgSrc} width={450} />}
+          <div class="blurhash">
+            {imgSrc.value && (
+              <img
+                src={isHoveringGradient.value ? transparentPixel : imgSrc.value}
+                width={fixedWidth}
+                height={imageHeight.value}
+                style={{
+                  backgroundImage: gradient.value,
+                  backgroundSize: "cover",
+                }}
+                onMouseOver={() => (isHoveringGradient.value = true)}
+                onMouseOut={() => (isHoveringGradient.value = false)}
+              />
+            )}
           </div>
           <p>
             <code>blurhashToCssGradientString</code>. Bytes:{" "}
@@ -210,14 +289,20 @@ export default function App() {
           </details>
         </div>
         <div>
-          <div
-            style={{
-              backgroundImage: `url(${bmpDataUri})`,
-              backgroundSize: "cover",
-            }}
-            class="blurhash"
-          >
-            {imgSrc.value && <img src={imgSrc} width={450} />}
+          <div class="blurhash">
+            {imgSrc.value && (
+              <img
+                src={isHoveringBmp.value ? transparentPixel : imgSrc.value}
+                width={fixedWidth}
+                height={imageHeight.value}
+                style={{
+                  backgroundImage: `url(${bmpDataUri})`,
+                  backgroundSize: "cover",
+                }}
+                onMouseOver={() => (isHoveringBmp.value = true)}
+                onMouseOut={() => (isHoveringBmp.value = false)}
+              />
+            )}
           </div>
           <p>
             <code>blurhashToDataUri</code>. Bytes: {bmpDataUri.value.length}.
@@ -229,17 +314,107 @@ export default function App() {
           </details>
         </div>
         <div>
-          <div
-            style={{
-              backgroundColor: rgbToStyle(
-                paletteColors.value?.[0] || [0, 0, 0]
-              ),
-            }}
-            class="blurhash"
-          >
-            {imgSrc.value && <img src={imgSrc} width={450} />}
+          <div class="blurhash">
+            {imgSrc.value && (
+              <img
+                src={isHoveringLqip.value ? transparentPixel : imgSrc.value}
+                width={fixedWidth}
+                height={imageHeight.value}
+                style={{
+                  backgroundImage: lqipUri.value ? `url(${lqipUri})` : "none",
+                  backgroundSize: "cover",
+                }}
+                onMouseOver={() => (isHoveringLqip.value = true)}
+                onMouseOut={() => (isHoveringLqip.value = false)}
+              />
+            )}
+          </div>
+          <p>
+            <code>LQIP</code>. Bytes: {lqipUri.value.length}. GZipped{" "}
+            {lqipLength}
+          </p>
+          <details>
+            <summary>LQIP URI</summary>
+            <textarea readOnly>{lqipUri.value}</textarea>
+          </details>
+        </div>
+        <div>
+          <div class="blurhash">
+            {imgSrc.value && (
+              <img
+                src={isHoveringColor.value ? transparentPixel : imgSrc.value}
+                width={fixedWidth}
+                height={imageHeight.value}
+                style={{
+                  backgroundColor: rgbToStyle(
+                    paletteColors.value?.[0] || [0, 0, 0]
+                  ),
+                  backgroundSize: "cover",
+                }}
+                onMouseOver={() => (isHoveringColor.value = true)}
+                onMouseOut={() => (isHoveringColor.value = false)}
+              />
+            )}
           </div>
           <p>Dominant color</p>
+        </div>
+        {/* New Image to CSS Gradient option */}
+        <div>
+          <div class="blurhash">
+            {imgSrc.value && (
+              <img
+                src={
+                  isHoveringCssGradient.value ? transparentPixel : imgSrc.value
+                }
+                width={fixedWidth}
+                height={imageHeight.value}
+                style={{
+                  backgroundImage: directGradientString.value,
+                  backgroundSize: "cover",
+                }}
+                onMouseOver={() => (isHoveringCssGradient.value = true)}
+                onMouseOut={() => (isHoveringCssGradient.value = false)}
+              />
+            )}
+          </div>
+          <p>
+            <code>imageToCssGradient</code>. Bytes:{" "}
+            {directGradientString.value.length}. GZipped {directGradientLength}
+          </p>
+          <details>
+            <summary>CSS Gradient</summary>
+            <textarea readOnly>
+              background-image: {directGradientString.value}
+            </textarea>
+          </details>
+        </div>
+        {/* New CSS Variables option */}
+        <div>
+          <div class="blurhash">
+            {imgSrc.value && (
+              <img
+                src={isHoveringCssVars.value ? transparentPixel : imgSrc.value}
+                width={fixedWidth}
+                height={imageHeight.value}
+                className="i-placeholder"
+                style={cssVarsString.value ? cssVarsString.value : {}}
+                onMouseOver={() => (isHoveringCssVars.value = true)}
+                onMouseOut={() => (isHoveringCssVars.value = false)}
+              />
+            )}
+          </div>
+          <p>
+            <code>CSS Variables</code>. Bytes: {cssVarsString.value.length}.
+            GZipped {cssVarsLength}
+          </p>
+          <details>
+            <summary>CSS Variables</summary>
+            <textarea readOnly>{cssVarsString.value}</textarea>
+          </details>
+          <details>
+            <summary>Shared CSS Class</summary>
+            <textarea readOnly>{cssClassString.value}</textarea>
+          </details>
         </div>
       </div>
     </div>
