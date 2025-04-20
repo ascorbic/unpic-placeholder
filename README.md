@@ -13,6 +13,19 @@ edge runtimes.
 
 [See the demo](https://unpic-placeholder.netlify.app/)
 
+## Development
+
+To run the demo locally:
+
+```bash
+git clone https://github.com/ascorbic/unpic-placeholder.git
+cd unpic-placeholder
+yarn install
+yarn dev:demo
+```
+
+The demo is built with Astro and Preact.
+
 ## Installation
 
 ```bash
