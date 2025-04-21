@@ -213,9 +213,9 @@ Parameters:
 
 Given a color as an RGB tuple, returns a CSS string e.g. `rgb(255, 0, 0)`
 
-| Function              | Type                                     |
-| --------------------- | ---------------------------------------- |
-| `rgbColorToCssString` | `([red, green, blue]: Colour) => string` |
+| Function              | Type                         |
+| --------------------- | ---------------------------- |
+| `rgbColorToCssString` | `(colour: Colour) => string` |
 
 ### :gear: blurhashToDataUri
 

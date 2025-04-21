@@ -2,8 +2,6 @@
  * Converts raw RGBA pixels to a data URI
  */
 
-import { Colour } from "./index";
-
 export function rgbaPixelsToBmp(
   pixels: Uint8ClampedArray,
   width: number,

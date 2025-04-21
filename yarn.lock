@@ -2276,7 +2276,6 @@ __metadata:
     pako: ^2.1.0
     parcel: ^2.8.3
     preact: ^10.26.5
-    preact-render-to-string: ^5.1.2
     publint: ^0.1.9
     tsdoc-markdown: ^0.0.1
     tsup: ^6.6.3
@@ -6095,17 +6094,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"preact-render-to-string@npm:^5.1.2":
-  version: 5.2.6
-  resolution: "preact-render-to-string@npm:5.2.6"
-  dependencies:
-    pretty-format: ^3.8.0
-  peerDependencies:
-    preact: ">=10"
-  checksum: be8d5d8fb502d422c503e68af7bcccb6facd942f3ae9a4d093ebe3f1d4f0b15c540624bdac434d53a2a8e8fb7afa4606383414e937c40933ca43445470a026ff
-  languageName: node
-  linkType: hard
-
 "preact-render-to-string@npm:^6.5.13":
   version: 6.5.13
   resolution: "preact-render-to-string@npm:6.5.13"
@@ -6119,13 +6107,6 @@ __metadata:
   version: 10.26.5
   resolution: "preact@npm:10.26.5"
   checksum: 3ef769e82bdb26314e51f02d09aea9ba566cad291504a5d79833055b1ff3ca7db647516315d2278498261881c61949917aac05cc56f172c32d013796378c304b
-  languageName: node
-  linkType: hard
-
-"pretty-format@npm:^3.8.0":
-  version: 3.8.0
-  resolution: "pretty-format@npm:3.8.0"
-  checksum: 21a114d43ef06978f8f7f6212be4649b0b094f05d9b30e14e37550bf35c8ca24d8adbca9e5adc4cc15d9eaf7a1e7a30478a4dc37b30982bfdf0292a5b385484c
   languageName: node
   linkType: hard
 
