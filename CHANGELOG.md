@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/ascorbic/unpic-placeholder/compare/v0.1.2...v0.2.0) (2025-04-22)
+
+
+### Features
+
+* add support for generating gradient as css vars ([#14](https://github.com/ascorbic/unpic-placeholder/issues/14)) ([9bc87fa](https://github.com/ascorbic/unpic-placeholder/commit/9bc87fa0ef05f964989fc67f218e996b0fe50896))
+
 ## [0.1.2](https://github.com/ascorbic/unpic-placeholder/compare/v0.1.1...v0.1.2) (2023-03-06)
 
 
