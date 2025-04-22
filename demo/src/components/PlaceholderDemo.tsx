@@ -1,6 +1,7 @@
 import { computed, effect, signal } from "@preact/signals";
-import { JSX } from "preact";
+import type { JSX } from "preact";
 import { decode, encode } from "blurhash";
+import { gzip } from "pako";
 
 import {
   getPalette,
@@ -9,9 +10,7 @@ import {
   rgbaPixelsToBmp,
   generateGradientCssClass,
   pixelsToCssVars,
-} from "../../src";
-import "./style.css";
-import { gzip } from "pako";
+} from "../../../src";
 
 // ⚠️ IMPORTANT ⚠️
 // Don't use this file as a reference for how to use the library!
@@ -65,11 +64,13 @@ const bmpDataUri = computed(() =>
 
 const lqipUri = signal("");
 
+// New variables for direct CSS gradient
 const directGradientString = signal("");
 const directGradientLength = computed(() =>
   gzipStringLength(directGradientString.value)
 );
 
+// New variables for CSS Variables optimization
 const cssVarsString = signal("");
 const cssClassString = signal("");
 const cssVarsLength = computed(() => gzipStringLength(cssVarsString.value));
@@ -183,7 +184,7 @@ const handleFileInputChange: JSX.GenericEventHandler<HTMLInputElement> = (
   reader.readAsDataURL(file);
 };
 
-export default function App() {
+export default function PlaceholderDemo() {
   return (
     <div>
       <div class="tools">
@@ -356,6 +357,7 @@ export default function App() {
           </div>
           <p>Dominant color</p>
         </div>
+        {/* New Image to CSS Gradient option */}
         <div>
           <div class="blurhash">
             {imgSrc.value && (
@@ -385,6 +387,7 @@ export default function App() {
             </textarea>
           </details>
         </div>
+        {/* New CSS Variables option */}
         <div>
           <div class="blurhash">
             {imgSrc.value && (

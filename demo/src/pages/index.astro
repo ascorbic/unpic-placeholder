@@ -1,0 +1,19 @@
+---
+import PlaceholderDemo from '../components/PlaceholderDemo';
+import '../styles/global.css';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/png" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <title>@unpic/placeholder</title>
+  </head>
+  <body>
+    <main>
+      <PlaceholderDemo client:load />
+    </main>
+  </body>
+</html>

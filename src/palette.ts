@@ -117,10 +117,9 @@ function equal(a: any[], b: any[]): boolean {
 
 /**
  * Given a color as an RGB tuple, returns a CSS string e.g. `rgb(255, 0, 0)`
- * @param color
- * @returns string
  */
 
-export function rgbColorToCssString([red, green, blue]: Colour): string {
+export function rgbColorToCssString(colour: Colour): string {
+  const [red, green, blue] = colour.map((value) => Math.round(value));
   return `rgb(${red},${green},${blue})`;
 }
