@@ -2,11 +2,7 @@ import { signal, effect } from "@preact/signals";
 import type { JSX } from "preact";
 import { gzip } from "pako";
 
-import {
-  getPalette,
-  pixelsToCssVars,
-  generateGradientCssClass,
-} from "../../../src";
+import { pixelsToCssVars, generateGradientCssClass } from "../../../src";
 import "./style.css";
 
 // Track if hovering to show placeholder
@@ -17,12 +13,9 @@ const imgSrc = signal("");
 const previewWidth = 800; // Increased from 450
 const imageHeight = signal(500); // Increased from 300
 
-// Transparent 1x1 pixel PNG as data URI
-const transparentPixel =
-  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=";
-
 // Variables for CSS Variables optimization
-const cssVarsString = signal("{}");
+const cssVarsString = signal("");
+const cssVarsObject = signal({});
 const cssClassString = signal("");
 
 // Computed signal for CSS vars gzipped length
@@ -43,9 +36,6 @@ effect(() => {
     cssVarsLength.value = 0;
   }
 });
-
-// Palette colors for dominant color display
-const paletteColors = signal([] as [number, number, number][]);
 
 const rgbToStyle = (rgb: [number, number, number]) => {
   const [r, g, b] = rgb;
@@ -111,8 +101,11 @@ effect(() => {
         }
       }
 
-      cssVarsString.value = JSON.stringify(cssVarsObj);
+      cssVarsString.value = Object.entries(cssVarsObj)
+        .map(([key, value]) => `${key}:${value}`)
+        .join(";");
       cssClassString.value = generateGradientCssClass(width * height);
+      cssVarsObject.value = cssVarsObj;
     } catch (error) {
       console.error("Error generating CSS variables:", error);
       cssVarsString.value = "{}";
@@ -151,11 +144,6 @@ const useImage = (image: HTMLImageElement) => {
   }
   context.drawImage(image, 0, 0, width, height);
 
-  const { data } = context.getImageData(0, 0, canvas.width, canvas.height);
-  const start = performance.now();
-  paletteColors.value = getPalette(data, 8);
-  console.log("getPalette", performance.now() - start, "ms");
-
   imgSrc.value = image.src;
 };
 
@@ -185,38 +173,10 @@ export default function App() {
     <div>
       <div class="tools">
         <div class="instructions">
-          <h1>@unpic/placeholder - CSS Variables Version</h1>
           <p>
-            This is a simplified version of the library for generating low
-            quality image placeholders using CSS variables. This technique
-            creates a highly optimized placeholder that is displayed while an
-            image is loading, giving better appearance and potentially reducing
-            the LCP time.
+            Click one of the examples or choose your own image. Hover over the
+            image to see the CSS gradient placeholder effect.
           </p>
-          <p>
-            Try it out by clicking one of the examples or choosing your own
-            image. Hover over the image to see the CSS variables placeholder
-            effect.
-          </p>
-          <div class="palette">
-            {paletteColors.value.map((color) => (
-              <div
-                style={{
-                  backgroundColor: rgbToStyle(color),
-                }}
-              />
-            ))}
-          </div>
-          <div
-            class="dominant-color"
-            style={{
-              backgroundColor: rgbToStyle(
-                paletteColors.value?.[0] ?? [0, 0, 0]
-              ),
-            }}
-          >
-            Dominant color
-          </div>
         </div>
         <div class="grid">
           {sampleImages.map((src) => (
@@ -233,7 +193,6 @@ export default function App() {
         </div>
       </div>
       <div class="images">
-        {/* Only CSS Variables version */}
         <div class="preview-container">
           <div class="image-preview">
             {imgSrc.value && (
@@ -242,9 +201,7 @@ export default function App() {
                 style={{
                   width: `${previewWidth}px`,
                   height: `${imageHeight.value}px`,
-                  ...(cssVarsString.value
-                    ? JSON.parse(cssVarsString.value)
-                    : {}),
+                  ...cssVarsObject.value,
                   position: "relative",
                 }}
                 onMouseOver={() => (isHoveringCssVars.value = true)}
@@ -268,26 +225,27 @@ export default function App() {
               </div>
             )}
           </div>
-          <div class="image-details">
-            <p>
-              <strong>CSS Variables Image Placeholder</strong>
-              <br />
-              Bytes: {cssVarsString.value.length}
-              <br />
-              Gzipped: {cssVarsLength} bytes
-            </p>
-            <details>
-              <summary>CSS Variables</summary>
-              <textarea readOnly>{cssVarsString.value}</textarea>
-            </details>
-            <details>
-              <summary>Shared CSS Class</summary>
-              <textarea readOnly>{cssClassString.value}</textarea>
-            </details>
-            <p class="hover-instructions">
-              <i>Hover over the image to see the placeholder effect</i>
-            </p>
-          </div>
+          {imgSrc.value ? (
+            <div class="image-details">
+              <details>
+                <summary>CSS Variables</summary>
+                <textarea readOnly>style="{cssVarsString.value}"</textarea>
+              </details>
+              <details>
+                <summary>Shared CSS Class</summary>
+                <textarea readOnly>{cssClassString.value}</textarea>
+              </details>
+              <p>
+                <strong>CSS Variables Image Placeholder</strong>
+                <br />
+                Bytes: {cssVarsString.value.length}. Gzipped: {cssVarsLength}{" "}
+                bytes
+              </p>
+              <p class="hover-instructions">
+                <i>Hover over the image to see the placeholder effect</i>
+              </p>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

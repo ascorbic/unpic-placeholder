@@ -77,7 +77,6 @@ label[for="file"] {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100px;
   border: 2px dashed #ccc;
   border-radius: 4px;
   cursor: pointer;

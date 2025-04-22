@@ -233,7 +233,7 @@ export function generateGradientCssClass(
 
   for (let i = 0; i < totalGradients; i++) {
     bgImages.push(
-      `radial-gradient(at var(--${prefix}p${i},0 0), var(--${prefix}c${i},#000) 0%, transparent 50%)`
+      `radial-gradient(at var(--${prefix}p${i},0 0), var(--${prefix}c${i},transparent) 0%, transparent 50%)`
     );
   }
 
