@@ -106,5 +106,5 @@ export function blurhashToImageCssString(
     blurhash,
     width,
     height
-  )}") cover`;
+  )}") center/cover`;
 }
