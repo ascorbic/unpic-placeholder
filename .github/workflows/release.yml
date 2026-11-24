@@ -22,14 +22,13 @@ jobs:
           fetch-depth: 0
 
       - name: Setup PNPM
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
 
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
           node-version: "lts/*"
           cache: "pnpm"
-          registry-url: "https://registry.npmjs.org"
 
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
@@ -39,12 +38,10 @@ jobs:
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
-        uses: changesets/action@v1
+        uses: changesets/action@v2
         with:
-          version: pnpm changeset version
-          publish: pnpm changeset publish
-          commit: "ci: release"
-          title: "ci: release"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true
+          version-script: pnpm changeset version
+          publish-script: pnpm changeset publish
+          commit-message: "ci: release"
+          pr-title: "ci: release"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
